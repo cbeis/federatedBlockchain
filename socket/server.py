@@ -23,6 +23,7 @@ PrototypeBuffer = w3.eth.contract(address = contract_addr, abi = abi)
 model= XuILVQ()
 test_files = datasets.Phishing()
 train_files = []
+train_oracle_files = []
 
 while True:
     con,addr = s.accept()
@@ -44,9 +45,9 @@ while True:
             model.buffer.n_features = 9
             model.buffer.classes = {False, True}
         if oracleData != "":
-            train_files = train_files + oracleData
+            train_oracle_files = loads(codecs.decode(oracleData.encode(),"base64"))
 
-        for text, label in train_files:
+        for text, label in train_files + train_oracle_files:
             try:
                 model.learn_one(text,label)
             except:
@@ -71,6 +72,7 @@ while True:
                     PrototypeBuffer.functions._addPrototype(prototype,str(metric.get())).transact()
                     updated = True
                     train_files = []
+                    train_oracle_files = []
                 except:
                     updated = True
         elif metric.get() > float(accuracy):
@@ -79,6 +81,7 @@ while True:
                 try:
                     PrototypeBuffer.functions._addPrototype(prototype,str(metric.get())).transact()
                     train_files = []
+                    train_oracle_files = []
                     updated = True
                 except:
                     updated = True

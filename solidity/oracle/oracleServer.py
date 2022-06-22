@@ -1,10 +1,11 @@
+from pickle import dumps
 from web3 import Web3
 from web3.logs import DISCARD
 from river import datasets
 from random import randint
-import json,os,time
+import json,os,time,codecs
 
-def handle_file():
+def handle_file(train_split,count):
     chunk_size = randint(1,20)
     if len(train_split)-1 < count:
         return ""
@@ -13,14 +14,14 @@ def handle_file():
     else:
         send_data = train_split[count:(count+chunk_size)]
     count = count +chunk_size
-    return send_data
+    return codecs.encode(dumps(send_data),"base64").decode()
 
 def handle_event(event):
     receipt= w3.eth.wait_for_transaction_receipt(event['transactionHash'])
     result = getLatestDataEvent.processReceipt(receipt, errors=DISCARD)
     try:
         caller_address = result[0]['args']['callerAddress']
-        send_data = handle_file()
+        send_data = handle_file(train_split,count)
         if send_data != "":
             DataOracle.functions.setLatestData( send_data, caller_address).transact()
         else:
