@@ -11,10 +11,8 @@ contract DataOracle is Ownable{
   event GetLatestDataEvent(address callerAddress);
   event SetLatestDataEvent(string data, address callerAddress);
 
-
   function getLatestData() public{
     emit GetLatestDataEvent(msg.sender);
-    validation = "True";
     return;
   }
 
@@ -22,7 +20,6 @@ contract DataOracle is Ownable{
     PrototypeInterface prototypeInstance;
     prototypeInstance = PrototypeInterface(_callerAddress);
     prototypeInstance.callback(_data);
-    validation = "False";
     emit SetLatestDataEvent(_data, _callerAddress);
   }
 }
